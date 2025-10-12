@@ -21,6 +21,7 @@ from torchvision import datasets , transforms , models
 import pandas as pd
 import numpy as np
 from sklearn.metrics import confusion_matrix , classification_report
+from tqdm import tqdm
 
 # -------------------------
 # CONFIG
@@ -132,28 +133,25 @@ def evaluate( model , dataloader , split_name , criterion , device , dataset_siz
 def train_resnet18():
     """
     Huấn luyện ResNet18 trên Food-101, lưu lại mọi giá trị, mô hình tốt nhất và cuối cùng.
+    Hiển thị tiến trình chi tiết bằng tqdm.
     """
     set_seed( SEED )
-    # 1. Chuẩn bị dữ liệu
     dataloaders , dataset_sizes , class_names = get_data_loaders( DATA_DIR , BATCH_SIZE , NUM_WORKERS )
     num_classes = len( class_names )
 
-    # 2. Khởi tạo mô hình, loss, optimizer, scheduler
     model = build_resnet18( num_classes ).to( DEVICE )
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam( model.parameters() , lr = LR )
     scheduler = optim.lr_scheduler.StepLR( optimizer , step_size = 10 , gamma = 0.1 )
 
-    # 3. Biến lưu log
     log_rows = []
     best_acc = 0.0
     best_model_wts = copy.deepcopy( model.state_dict() )
 
-    # 4. Vòng lặp epoch
     for epoch in range( NUM_EPOCHS ):
         epoch_start = time.time()
-        print( f"Epoch { epoch + 1 } / { NUM_EPOCHS }" )
-        print( "-" * 10 )
+        print( f"\nEpoch { epoch + 1 } / { NUM_EPOCHS }" )
+        print( "-" * 30 )
 
         # --- Train ---
         model.train()
@@ -161,7 +159,8 @@ def train_resnet18():
         running_corrects = 0
         train_labels = []
         train_preds = []
-        for inputs , labels in dataloaders[ 'train' ]:
+        batch_iter = tqdm( dataloaders[ 'train' ] , desc = f"Train Epoch { epoch + 1 }" , unit = "batch" )
+        for batch_idx , ( inputs , labels ) in enumerate( batch_iter ):
             inputs = inputs.to( DEVICE )
             labels = labels.to( DEVICE )
             optimizer.zero_grad()
@@ -174,6 +173,12 @@ def train_resnet18():
             running_corrects += torch.sum( preds == labels.data ).item()
             train_labels.extend( labels.cpu().numpy() )
             train_preds.extend( preds.cpu().numpy() )
+            # Hiển thị info chi tiết từng batch
+            batch_iter.set_postfix( {
+                "loss" : f"{ loss.item() : .4f }" ,
+                "acc" : f"{ ( torch.sum( preds == labels.data ).item() / inputs.size( 0 ) ) : .4f }" ,
+                "batch" : f"{ batch_idx + 1 } / { len( dataloaders[ 'train' ] ) }"
+            } )
         train_loss = running_loss / dataset_sizes[ 'train' ]
         train_acc = running_corrects / dataset_sizes[ 'train' ]
         train_cm = confusion_matrix( train_labels , train_preds )
@@ -185,7 +190,6 @@ def train_resnet18():
         # --- Test ---
         test_loss , test_acc , test_cm , test_report = evaluate( model , dataloaders[ 'test' ] , 'test' , criterion , DEVICE , dataset_sizes[ 'test' ] )
 
-        # --- Log ---
         current_lr = optimizer.param_groups[ 0 ][ 'lr' ]
         log_rows.append( {
             'epoch' : epoch + 1 ,
@@ -205,12 +209,11 @@ def train_resnet18():
             'time_sec' : time.time() - epoch_start
         } )
 
-        print( f"Train Loss: { train_loss : .4f } Acc: { train_acc : .4f }" )
+        print( f"\nTrain Loss: { train_loss : .4f } Acc: { train_acc : .4f }" )
         print( f"Val   Loss: { val_loss : .4f } Acc: { val_acc : .4f }" )
         print( f"Test  Loss: { test_loss : .4f } Acc: { test_acc : .4f }" )
         print( f"LR: { current_lr : .6f } | Time: { log_rows[ -1 ][ 'time_sec' ] : .2f }s" )
 
-        # --- Lưu mô hình tốt nhất ---
         if val_acc > best_acc:
             best_acc = val_acc
             best_model_wts = copy.deepcopy( model.state_dict() )
