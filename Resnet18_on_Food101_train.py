@@ -175,9 +175,9 @@ def train_resnet18():
             train_preds.extend( preds.cpu().numpy() )
             # Hiển thị info chi tiết từng batch
             batch_iter.set_postfix( {
-                "loss" : f"{ loss.item() : .4f }" ,
-                "acc" : f"{ ( torch.sum( preds == labels.data ).item() / inputs.size( 0 ) ) : .4f }" ,
-                "batch" : f"{ batch_idx + 1 } / { len( dataloaders[ 'train' ] ) }"
+                "loss" : f"{loss.item():.4f}" ,
+                "acc" : f"{(torch.sum(preds == labels.data).item() / inputs.size(0)):.4f}" ,
+                "batch" : f"{batch_idx + 1} / {len(dataloaders['train'])}"
             } )
         train_loss = running_loss / dataset_sizes[ 'train' ]
         train_acc = running_corrects / dataset_sizes[ 'train' ]
