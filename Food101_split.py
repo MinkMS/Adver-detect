@@ -41,8 +41,8 @@ except Exception:
 # CONFIG (edit here)
 # -------------------------
 # Default paths (edit these to match your environment)
-INPUT_DIR = r"C:\Users\Mink\Documents\Python\Adver-detect\food-101\food-101"                # <-- change to your dataset root (contains 'images' folder)
-OUTPUT_DIR = r"C:\Users\Mink\Documents\Python\Adver-detect\food-101\food-101-split"         # <-- change to desired output folder
+INPUT_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\Datasets\Food-101\food-101"                # <-- change to your dataset root (contains 'images' folder)
+OUTPUT_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\Datasets\Food-101\food-101-split"         # <-- change to desired output folder
 
 # Default ratios (must sum to 1.0)
 TRAIN_RATIO = 0.8
@@ -52,7 +52,7 @@ TEST_RATIO = 0.1
 # Other defaults
 MIN_PER_SPLIT_PER_CLASS = 0    # best-effort minimum per class per split
 USE_SYMLINK = False            # default copy behavior
-SEED = 42
+SEED = 4
 # -------------------------
 
 def list_images_by_class( images_root : Path ) -> Dict[str , List[Path]]:
@@ -216,7 +216,7 @@ def compute_per_class_allocations( class_counts : Dict[str , int] , total_counts
     final_alloc : Dict[str , Tuple[int , int , int]] = { cls : ( arr[ 0 ] , arr[ 1 ] , arr[ 2 ] ) for cls , arr in alloc.items() }
     return final_alloc
 
-def perform_manual_split( mapping : Dict[str , List[Path]] , train_count : int , val_count : int , test_count : int , seed : int = 42 ) -> Dict[str , str]:
+def perform_manual_split( mapping : Dict[str , List[Path]] , train_count : int , val_count : int , test_count : int , seed : int = 4 ) -> Dict[str , str]:
     """
     mapping: class -> list of Paths
     returns dict path_str -> split ("train" / "val" / "test")
