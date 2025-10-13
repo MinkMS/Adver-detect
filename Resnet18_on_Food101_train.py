@@ -27,15 +27,15 @@ from tqdm import tqdm
 # CONFIG
 # -------------------------
 DATA_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\Datasets\Food-101\food-101-split"
-BATCH_SIZE = 32
-NUM_WORKERS = 4
+BATCH_SIZE = 64
+NUM_WORKERS = 8
 NUM_EPOCHS = 30
-LR = 0.001
+LR = 0.0005
 SEED = 4
 DEVICE = torch.device( "cuda" if torch.cuda.is_available() else "cpu" )
 
 # Đường dẫn lưu model và logs
-MODEL_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\GitHub\Adver-detect\resnet18"
+MODEL_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\GitHub\Adver-detect\resnet18-augmented"
 LOG_DIR = os.path.join( MODEL_DIR , "logs" )
 LOG_CSV = os.path.join( LOG_DIR , "resnet18_training_log.csv" )
 BEST_MODEL_PATH = os.path.join( MODEL_DIR , "resnet18_food101_best.pth" )
@@ -63,11 +63,20 @@ def set_seed( seed : int = 4 ):
 def get_data_loaders( data_dir : str , batch_size : int , num_workers : int ):
     """
     Tạo các DataLoader cho train/val/test với các transform phù hợp.
+    Augmentation cho Food-101: crop, flip, rotation, color jitter, affine, perspective, grayscale, blur, erasing.
     """
     data_transforms = {
         'train' : transforms.Compose( [
             transforms.RandomResizedCrop( 224 ),
             transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation( 20 ),
+            transforms.ColorJitter( brightness = 0.3 , contrast = 0.3 , saturation = 0.3 , hue = 0.2 ),
+            transforms.RandomAffine( degrees = 0 , translate = ( 0.1 , 0.1 ) , scale = ( 0.8 , 1.2 ) ),
+            transforms.RandomPerspective( distortion_scale = 0.2 , p = 0.5 ),
+            transforms.RandomGrayscale( p = 0.1 ),
+            transforms.GaussianBlur( 3 ),
+            transforms.RandomErasing( p = 0.2 ),
             transforms.ToTensor(),
             transforms.Normalize( [ 0.485 , 0.456 , 0.406 ] , [ 0.229 , 0.224 , 0.225 ] )
         ] ),
@@ -267,4 +276,7 @@ if __name__ == "__main__":
     Chạy script này để huấn luyện ResNet18 trên Food-101 đã split.
     Mọi giá trị sẽ được lưu lại để đánh giá sau.
     """
+    # Tạo thư mục lưu model và logs nếu chưa tồn tại
+    os.makedirs( MODEL_DIR , exist_ok = True )
+    os.makedirs( LOG_DIR , exist_ok = True )
     train_resnet18()
