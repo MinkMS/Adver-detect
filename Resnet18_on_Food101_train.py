@@ -209,16 +209,16 @@ def train_resnet18():
             'time_sec' : time.time() - epoch_start
         } )
 
-        print( f"\nTrain Loss: { train_loss : .4f } Acc: { train_acc : .4f }" )
-        print( f"Val   Loss: { val_loss : .4f } Acc: { val_acc : .4f }" )
-        print( f"Test  Loss: { test_loss : .4f } Acc: { test_acc : .4f }" )
-        print( f"LR: { current_lr : .6f } | Time: { log_rows[ -1 ][ 'time_sec' ] : .2f }s" )
+        print( f"\nTrain Loss: { train_loss:.4f} Acc: { train_acc:.4f}" )
+        print( f"Val   Loss: { val_loss:.4f} Acc: { val_acc:.4f}" )
+        print( f"Test  Loss: { test_loss:.4f} Acc: { test_acc:.4f}" )
+        print( f"LR: { current_lr:.6f} | Time: { log_rows[ -1 ][ 'time_sec' ]:.2f}s" )
 
         if val_acc > best_acc:
             best_acc = val_acc
             best_model_wts = copy.deepcopy( model.state_dict() )
             torch.save( best_model_wts , BEST_MODEL_PATH )
-            print( f"Best model saved at epoch { epoch + 1 } ( val_acc = { val_acc : .4f } )" )
+            print( f"Best model saved at epoch { epoch + 1 } ( val_acc = { val_acc:.4f} )" )
 
         scheduler.step()
 
