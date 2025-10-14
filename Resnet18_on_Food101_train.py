@@ -63,20 +63,12 @@ def set_seed( seed : int = 4 ):
 def get_data_loaders( data_dir : str , batch_size : int , num_workers : int ):
     """
     Tạo các DataLoader cho train/val/test với các transform phù hợp.
-    Augmentation cho Food-101: crop, flip, rotation, color jitter, affine, perspective, grayscale, blur, erasing.
+    Không dùng augmentation cho tập train.
     """
     data_transforms = {
         'train' : transforms.Compose( [
-            transforms.RandomResizedCrop( 224 ),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomRotation( 20 ),
-            transforms.ColorJitter( brightness = 0.3 , contrast = 0.3 , saturation = 0.3 , hue = 0.2 ),
-            transforms.RandomAffine( degrees = 0 , translate = ( 0.1 , 0.1 ) , scale = ( 0.8 , 1.2 ) ),
-            transforms.RandomPerspective( distortion_scale = 0.2 , p = 0.5 ),
-            transforms.RandomGrayscale( p = 0.1 ),
-            transforms.GaussianBlur( 3 ),
-            transforms.RandomErasing( p = 0.2 ),
+            transforms.Resize( 256 ),
+            transforms.CenterCrop( 224 ),
             transforms.ToTensor(),
             transforms.Normalize( [ 0.485 , 0.456 , 0.406 ] , [ 0.229 , 0.224 , 0.225 ] )
         ] ),
