@@ -28,14 +28,14 @@ from tqdm import tqdm
 # -------------------------
 DATA_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\Datasets\Food-101\food-101-split"
 BATCH_SIZE = 64
-NUM_WORKERS = 8
+NUM_WORKERS = 12
 NUM_EPOCHS = 30
-LR = 0.0005
+LR = 0.00005
 SEED = 4
 DEVICE = torch.device( "cuda" if torch.cuda.is_available() else "cpu" )
 
 # Đường dẫn lưu model và logs
-MODEL_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\GitHub\Adver-detect\resnet18-augmented"
+MODEL_DIR = r"C:\Users\Mink\OneDrive\Documents\Coding\GitHub\Adver-detect\resnet18-ver2"
 LOG_DIR = os.path.join( MODEL_DIR , "logs" )
 LOG_CSV = os.path.join( LOG_DIR , "resnet18_training_log.csv" )
 BEST_MODEL_PATH = os.path.join( MODEL_DIR , "resnet18_food101_best.pth" )
