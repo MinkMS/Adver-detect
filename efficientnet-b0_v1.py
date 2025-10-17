@@ -290,7 +290,7 @@ def train( dataloaders : Dict[str , DataLoader ] , dataset_sizes : Dict[str , in
             tb_writer.add_scalar( 'val/acc' , val_acc , epoch + 1 )
             tb_writer.add_scalar( 'lr' , current_lr , epoch + 1 )
 
-        print( f"Epoch { epoch + 1 } / { num_epochs }  - train_loss: { train_loss :.4f }  train_acc: { train_acc :.4f }  val_loss: { val_loss :.4f }  val_acc: { val_acc :.4f }  lr: { current_lr :.6e }  time: { int( epoch_time ) }s" )
+        print( f"Epoch { epoch + 1 } / { num_epochs }  - train_loss: { train_loss :.4f}  train_acc: { train_acc :.4f}  val_loss: { val_loss :.4f}  val_acc: { val_acc :.4f}  lr: { current_lr :.6e}  time: { int( epoch_time ) }s" )
 
         # Early stopping & checkpoint best
         if val_acc > best_val_acc + 1e-6:
@@ -298,7 +298,7 @@ def train( dataloaders : Dict[str , DataLoader ] , dataset_sizes : Dict[str , in
             best_model_wts = copy.deepcopy( model.state_dict() )
             best_path = output_dir / 'best_model.pth'
             torch.save( { 'model_state_dict' : best_model_wts , 'epoch' : epoch + 1 , 'val_acc' : best_val_acc } , best_path )
-            print( f"  Saved best model to { best_path } ( val_acc = { best_val_acc :.4f } )" )
+            print( f"  Saved best model to { best_path } ( val_acc = { best_val_acc :.4f} )" )
             no_improve = 0
         else:
             no_improve += 1
@@ -310,7 +310,7 @@ def train( dataloaders : Dict[str , DataLoader ] , dataset_sizes : Dict[str , in
     model.load_state_dict( best_model_wts )
     final_path = output_dir / 'final_model.pth'
     torch.save( { 'model_state_dict' : model.state_dict() } , final_path )
-    print( f"Training finished. Best val_acc = { best_val_acc :.4f } . Final models saved to { final_path }" )
+    print( f"Training finished. Best val_acc = { best_val_acc :.4f} . Final models saved to { final_path }" )
 
     if tb_writer is not None:
         tb_writer.close()
